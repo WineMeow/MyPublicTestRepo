@@ -35,15 +35,12 @@ jobs:
         run: |
           run_id=${{ github.run_id }}
           html_url="https://github.com/${{ github.repository }}/actions/runs/${run_id}"
-          payload=$(jq -n --arg repo "${{ github.repository }}" \
-                          --arg stage "prod" \
-                          --arg url "$html_url" \
-                          '{stage: $stage, repo: $repo, approval_url: $url}')
+
           entires='[
             {
               \"Source\": \"github.workflow\",
               \"DetailType\": \"Deployment Approval Needed\",
-              \"Detail\": \"{ \"repo\": \"${{ github.repository }}\", \"approval_url\": \"$url\", \"stage\": \"$stage\"}\",
+              \"Detail\": \"{ \"repo\": \"${{ github.repository }}\", \"approval_url\": \"$html_url\", \"stage\": \"prod\"}\",
               \"EventBusName\": \"ReleaseCenterPoCEventBus\"
             }
           ]'
