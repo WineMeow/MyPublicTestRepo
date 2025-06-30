@@ -39,14 +39,14 @@ jobs:
                           --arg stage "prod" \
                           --arg url "$html_url" \
                           '{stage: $stage, repo: $repo, approval_url: $url}')
-          entires="[
+          entires='[
             {
               \"Source\": \"github.workflow\",
               \"DetailType\": \"Deployment Approval Needed\",
-              \"Detail\": $payload,
-              \"EventBusName\": \"your-event-bus-name\"
+              \"Detail\": \"$payload\",
+              \"EventBusName\": \"ReleaseCenterPoCEventBus\"
             }
-          ]"
+          ]'
           echo "Payload: $payload"
           echo "entires: $entires"
 
