@@ -43,7 +43,7 @@ jobs:
             {
               \"Source\": \"github.workflow\",
               \"DetailType\": \"Deployment Approval Needed\",
-              \"Detail\": \"$payload\",
+              \"Detail\": \"{ \"repo\": \"${{ github.repository }}\", \"approval_url\": \"$url\", \"stage\": \"$stage\"}\",
               \"EventBusName\": \"ReleaseCenterPoCEventBus\"
             }
           ]'
