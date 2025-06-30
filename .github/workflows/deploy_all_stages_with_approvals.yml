@@ -1,4 +1,4 @@
-name: AWS Sync to S3 and Deploy To All Stages
+name: AWS Sync to S3 and Deploy To All Stages- new
 
 on:
   push:
