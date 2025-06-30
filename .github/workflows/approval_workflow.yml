@@ -1,0 +1,55 @@
+name: AWS Approval Workflow
+
+on:
+  push:
+    branches:
+      - main
+  
+env:
+  S3_LOCATION_RUI : "s3://release-center-github-actions-poc-zhajngy/release-center/WineMeow/MyPublicTestRepo/stages/test-approval/"
+  AWS_REGION : "us-east-1"
+  ROLE_TO_ASSUME: "arn:aws:iam::342262164519:role/release-center-github-actions-poc-role-zhajngy"
+  ROLE_TO_ASSUME_SESSION_NAME: "ReleaseCenterSession"
+  
+# permission can be added at job level or workflow level
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+  
+jobs:
+  DeployToS3WithApproval:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+        
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4.2.1
+        with:
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          role-session-name: ${{ env.ROLE_TO_ASSUME_SESSION_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Send approval request to EventBridge
+        run: |
+          run_id=${{ github.run_id }}
+          html_url="https://github.com/${{ github.repository }}/actions/runs/${run_id}"
+          payload=$(jq -n --arg repo "${{ github.repository }}" \
+                          --arg stage "prod" \
+                          --arg url "$html_url" \
+                          '{stage: $stage, repo: $repo, approval_url: $url}')
+
+          aws events put-events --entries "[
+            {
+              \"Source\": \"github.workflow\",
+              \"DetailType\": \"Deployment Approval Needed\",
+              \"Detail\": \"$payload\",
+              \"EventBusName\": \"ReleaseCenterPoCEventBus\"
+            }
+          ]"
+      
+      # Upload a file to AWS s3
+      - name: Copy repo to s3
+        run: |
+          aws s3 sync . ${{ env.S3_LOCATION_RUI }} --delete
