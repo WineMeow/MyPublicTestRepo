@@ -69,6 +69,23 @@ jobs:
         run: |
           aws s3 sync ${{ env.DEV_S3_LOCATION_URI }} ${{ env.TEST_S3_LOCATION_URI }} --delete
 
+  notify-approval:
+    name: Send approval to event bus
+    runs-on: ubuntu-latest
+    steps:        
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4.2.1
+        with:
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          role-session-name: ${{ env.ROLE_TO_ASSUME_SESSION_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Send approval request to EventBridge
+        run: |
+          run_id=${{ github.run_id }}
+          html_url="https://github.com/${{ github.repository }}/actions/runs/${run_id}"
+
+          aws events put-events --entries '[{"EventBusName":"ReleaseCenterPoCEventBus","Source":"github.workflow","DetailType":"Deployment Approval Needed","Detail":"{\"stage\": \"prod\", \"repo\": \"${{ github.repository }}\", \"approval_url\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"}]'
 
   deploy-prod:
     name: Deploy to Prod
