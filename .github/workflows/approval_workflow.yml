@@ -36,7 +36,7 @@ jobs:
           run_id=${{ github.run_id }}
           html_url="https://github.com/${{ github.repository }}/actions/runs/${run_id}"
 
-          aws events put-events --entries '[{"EventBusName":"ReleaseCenterPoCEventBus","Source":"github.workflow","DetailType":"Deployment Approval Needed","Detail":{"stage": "prod", "repo": "${{ github.repository }}", "approval_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}}]'
+          aws events put-events --entries '[{"EventBusName":"ReleaseCenterPoCEventBus","Source":"github.workflow","DetailType":"Deployment Approval Needed","Detail":\"{\"stage\": \"prod\", \"repo\": \"${{ github.repository }}\", \"approval_url\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}\"}]'
 
   deploy-prod:
     name: Deploy to Prod after acquiring approval
