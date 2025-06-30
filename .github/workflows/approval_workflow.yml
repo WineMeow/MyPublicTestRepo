@@ -35,10 +35,7 @@ jobs:
         run: |
           run_id=${{ github.run_id }}
           html_url="https://github.com/${{ github.repository }}/actions/runs/${run_id}"
-          payload=$(jq -n --arg repo "${{ github.repository }}" \
-                          --arg stage "prod" \
-                          --arg url "$html_url" \
-                          '{stage: $stage, repo: $repo, approval_url: $url}')
+          payload="{\"stage\":\"prod\",\"repo\":\"${{ github.repository }}\",\"approval_url\":\"$html_url\"}"
 
           aws events put-events --entries "[
             {
