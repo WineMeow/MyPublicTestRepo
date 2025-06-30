@@ -43,7 +43,7 @@ jobs:
             {
               \"Source\": \"github.workflow\",
               \"DetailType\": \"Deployment Approval Needed\",
-              \"Detail\": \"$payload\",
+              \"Detail\": $payload,
               \"EventBusName\": \"your-event-bus-name\"
             }
           ]"
