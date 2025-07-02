@@ -1,3 +1,3 @@
 # MyPublicTestRepo
 
-test repo
+My test repo
