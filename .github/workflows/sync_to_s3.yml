@@ -23,14 +23,11 @@ jobs:
       - name: Git clone the repository
         uses: actions/checkout@v4
         
-      - name: Configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v4.2.1
+      - name: Deploy repo to dev
+        uses: ./.github/actions/deploy-util
         with:
           role-to-assume: ${{ env.ROLE_TO_ASSUME }}
           role-session-name: ${{ env.ROLE_TO_ASSUME_SESSION_NAME }}
           aws-region: ${{ env.AWS_REGION }}
-      
-      # Upload a file to AWS s3
-      - name: Copy repo to s3
-        run: |
-          aws s3 sync . ${{ env.S3_LOCATION_RUI }} --delete
+          source: "."
+          destination: ${{ env.S3_LOCATION_RUI }}
