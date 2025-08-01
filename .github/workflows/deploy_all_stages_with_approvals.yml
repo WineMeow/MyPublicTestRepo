@@ -92,6 +92,7 @@ jobs:
     name: Deploy to Prod
     runs-on: ubuntu-latest
     # needs: notify-approval
+    needs: deploy-test
     environment: prod
     steps:
       - name: Configure aws credentials
